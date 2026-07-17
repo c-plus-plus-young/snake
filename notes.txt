@@ -1,0 +1,27 @@
+// snake should have attributes length (int), direction (could be string, but int will be easier to code), 
+// head position (tuple), tail position (tuple), and eaten attribute 
+// (an int, as eating an apple will add more than one segment to it)
+
+// if (eaten > 0) {
+//     move head but not tail
+//     eaten -= 1
+// } else {
+//    move head and tail
+// } 
+
+
+// snake should be a deque with each element being the 
+// x and y coordinates of the snake segment. Tail segment
+// will be deleted and a new head segment will be made. 
+// 
+// Can control how big the snake grows with each bite. Just
+// hold the tail in place until eaten is 0:
+// if (eaten > 0) {
+//     move head only
+//     eaten -=1
+// } else {
+//     move head and tail
+// }
+
+
+11:25-?

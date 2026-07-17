@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="18.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="C:\Users\14357\GitHub\Work USU\Ambassadors\snake\main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\14357\GitHub\Work USU\Ambassadors\snake\print.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\14357\GitHub\Work USU\Ambassadors\snake\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{28B6DDFF-9D63-3EF4-AA0C-9B6B26C1BE03}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

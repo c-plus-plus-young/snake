@@ -1,0 +1,10 @@
+^C:\USERS\14357\GITHUB\WORK USU\AMBASSADORS\SNAKE\BUILD\CMAKEFILES\30DD6654F33456F9B550830F98CDC964\GENERATE.STAMP.RULE
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" "-SC:/Users/14357/GitHub/Work USU/Ambassadors/snake" "-BC:/Users/14357/GitHub/Work USU/Ambassadors/snake/build" --check-stamp-list CMakeFiles/generate.stamp.list --vs-solution-file "C:/Users/14357/GitHub/Work USU/Ambassadors/snake/build/SDL2Example.slnx"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
