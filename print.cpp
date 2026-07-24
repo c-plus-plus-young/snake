@@ -36,6 +36,13 @@ void printChar(char c, int color, int x, int y, SDL_Renderer* renderer) {
             SDL_RenderDrawPoint(renderer, x + 1, y + 2);
             SDL_RenderDrawPoint(renderer, x + 1, y + 4);
             break;
+        case 'C':
+            SDL_RenderDrawLine(renderer, x, y, x, y + 4);
+            SDL_RenderDrawLine(renderer, x + 2, y, x + 2, y + 1);
+            SDL_RenderDrawLine(renderer, x + 2, y + 3, x + 2, y + 4);
+            SDL_RenderDrawPoint(renderer, x + 1, y);
+            SDL_RenderDrawPoint(renderer, x + 1, y + 4);
+            break;
         case 'E':
             SDL_RenderDrawLine(renderer, x, y, x, y + 4);
             SDL_RenderDrawLine(renderer, x + 1, y, x + 2, y);
@@ -172,6 +179,10 @@ void printChar(char c, int color, int x, int y, SDL_Renderer* renderer) {
             SDL_RenderDrawPoint(renderer, x + 1, y + 2);
             break;
         // Symbols
+        case ':':
+            SDL_RenderDrawPoint(renderer, x + 1, y + 1);
+            SDL_RenderDrawPoint(renderer, x + 1, y + 3);
+            break;
         default:
             // If the letter is not implemented, print a pound sign (#) 
             SDL_RenderDrawLine(renderer, x, y, x, y + 4);
@@ -181,4 +192,10 @@ void printChar(char c, int color, int x, int y, SDL_Renderer* renderer) {
     } 
     
     SDL_RenderPresent(renderer);
+}
+
+void printString(const std::string& str, int color, int x, int y, SDL_Renderer* renderer) {
+    for (size_t i = 0; i < str.length(); ++i) {
+        printChar(str[i], color, x + i * 4, y, renderer); // 4 pixels apart for spacing
+    }
 }

@@ -13,6 +13,7 @@ find_package(SDL2 CONFIG REQUIRED)
 add_executable(SDL2Example
     main.cpp
     print.cpp
+    snake.cpp
 )
 
 # Link SDL2

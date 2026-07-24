@@ -26,7 +26,6 @@ const int UP = 0;
 const int DOWN = 1;
 const int LEFT = 2;
 const int RIGHT = 3;
-int direction = LEFT;
 
 // Define colors
 const int WHITE = 0;
@@ -36,19 +35,12 @@ const int BLUE = 3;
 
 // Game Setup
 bool playing = false; // Forces title screen to show
-int foodSize = 3; // Number of segments to grown when food is eaten
-int eaten = 0; // Number of segments *left* to grow 
 bool foodPlaced = false; // Whether food has been placed on the board 
 std::array<int, 2> food{-1, -1}; // Food position
-std::deque<std::array<int, 2>> snake;
 std::array<std::array<int, 2>, W * H> board; // 2D array to represent the game board
 
 void drawTitle(SDL_Renderer* renderer) {
-    printChar('S', WHITE, 6, 4, renderer);
-    printChar('n', WHITE, 10, 4, renderer);
-    printChar('a', WHITE, 14, 4, renderer);
-    printChar('k', WHITE, 18, 4, renderer);
-    printChar('e', WHITE, 22, 4, renderer);
+    printString("Snake", WHITE, 6, 4, renderer);
 }
 
 void drawSnake(std::deque<std::array<int, 2>> snake, SDL_Renderer* renderer, int color) {
@@ -59,9 +51,11 @@ void drawSnake(std::deque<std::array<int, 2>> snake, SDL_Renderer* renderer, int
         SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
     } 
     
+    
     for (int i = 0; i < snake.size(); i++) {
-        int x = snake[i][0];
-        int y = snake[i][1];
+        std::array<int, 2> segment = snake.getSegment(i);
+        int x = segment[0];
+        int y = segment[1];
 
         SDL_RenderDrawPoint(renderer, x, y);
     }
@@ -72,25 +66,25 @@ void drawSnake(std::deque<std::array<int, 2>> snake, SDL_Renderer* renderer, int
 bool updateSnake(std::deque<std::array<int, 2>>& snake, int direction) {
     // Move head in direction
     if (direction == UP) {
-        snake.push_front(std::array<int, 2>{snake[0][0], snake[0][1] - 1});
+        snake.addSegment(snake.getSegment(0)[0], snake.getSegment(0)[1] - 1);
     } else if (direction == DOWN) {
-        snake.push_front(std::array<int, 2>{snake[0][0], snake[0][1] + 1});
+        snake.addSegment(std::array<int, 2>{snake.getSegment(0)[0], snake.getSegment(0)[1] + 1});
     } else if (direction == LEFT) {
-        snake.push_front(std::array<int, 2>{snake[0][0] - 1, snake[0][1]});
+        snake.addSegment(std::array<int, 2>{snake.getSegment(0)[0] - 1, snake.getSegment(0)[1]});
     } else if (direction == RIGHT) {
-        snake.push_front(std::array<int, 2>{snake[0][0] + 1, snake[0][1]});
+        snake.addSegment(std::array<int, 2>{snake.getSegment(0)[0] + 1, snake.getSegment(0)[1]});
     }
 
     // Check if head is colliding with walls
-    if (snake[0][0] < 0 || snake[0][0] >= W || snake[0][1] < 0 || snake[0][1] >= H) {
+    if (snake.getSegment(0)[0] < 0 || snake.getSegment(0)[0] >= W || snake.getSegment(0)[1] < 0 || snake.getSegment(0)[1] >= H) {
         return false;
     }
 
     // Tail logic. Don't move tail if eaten > 0
-    if (eaten > 0) {
-        eaten -= 1;
+    if (snake.getEaten() > 0) {
+        snake.decrementEaten();
     } else {
-        snake.pop_back();
+        snake.removeSegment();
     }
 
     // check if head is colliding with body. It's important to check this after tail logic
@@ -102,7 +96,7 @@ bool updateSnake(std::deque<std::array<int, 2>>& snake, int direction) {
      
     // If head is on food, increment eaten
     if (snake[0][0] == food[0] && snake[0][1] == food[1]) {
-        eaten += foodSize;
+        eaten += getFoodSize();
         foodPlaced = false;
     }
 
@@ -113,36 +107,26 @@ void drawGameOver(SDL_Renderer* renderer, const std::deque<std::array<int, 2>>& 
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
 
     // Check length. If snake is maximum length, the game has been won
-    if (snake.size() == W * H) {
+    if (snake.getSize() == W * H) {
         // Draw "YOU WIN" message
 
         
 
 
     } else {
-        printChar('G', WHITE, 7, 1, renderer);
-        printChar('A', WHITE, 11, 1, renderer);
-        printChar('M', WHITE, 15, 1, renderer);
-        printChar('E', WHITE, 19, 1, renderer);
-
-        printChar('O', WHITE, 7, 7, renderer);
-        printChar('V', WHITE, 11, 7, renderer);
-        printChar('E', WHITE, 15, 7, renderer);
-        printChar('R', WHITE, 19, 7, renderer);
+        printString("GAME", WHITE, 7, 1, renderer);
+        printString("OVER", WHITE, 7, 7, renderer);
     }
     SDL_RenderPresent(renderer);
     SDL_Delay(3000); // Wait for 3 seconds before returning to title screen
 
-    // SDL_RenderClear(renderer);
-    printChar('S', WHITE, 6, 4, renderer);
-    printChar('C', WHITE, 10, 4, renderer);
-    printChar('O', WHITE, 14, 4, renderer);
-    printChar('R', WHITE, 18, 4, renderer);
-    printChar('E', WHITE, 22, 4, renderer);
-    printChar(':', WHITE, 26, 4, renderer);
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+    SDL_RenderClear(renderer);
+    printString("SCORE:", WHITE, 3, 4, renderer);
 
     for (int i = 0; i < std::to_string(snake.size()).length(); i++) {
-        printChar(std::to_string(snake.size())[i], WHITE, 30 + i * 4, 4, renderer);
+        std::cout << snake.size() << "\n";
+        // printChar(std::to_string(snake.size()), WHITE, 7 + i * 4, 10, renderer);
     }
     SDL_RenderPresent(renderer);
     SDL_Delay(3000); // Wait for 3 seconds before returning to title screen
@@ -174,7 +158,7 @@ void drawFood(std::array<int, 2>& food, SDL_Renderer* renderer, const std::deque
 
 // int main(int argc, char* argv[]) {
 int main(int argc, char* argv[]) {
-    
+    Snake snake;
     // Initialize snake as deque, and populate first 
     // three segments
     snake.push_front(std::array<int, 2>{15, 7});
@@ -246,20 +230,20 @@ int main(int argc, char* argv[]) {
                 if (e.type == SDL_KEYDOWN) {
                     if (SDL_GetKeyName(e.key.keysym.sym) == std::string("W")) {
                         // Snake can't turn 180 degrees
-                        if (direction != DOWN) {
-                            direction = UP;
+                        if (snake.getDirection() != DOWN) {
+                            snake.setDirection(UP);
                         }
                     } else if (SDL_GetKeyName(e.key.keysym.sym) == std::string("A")) {
-                        if (direction != RIGHT) {
-                            direction = LEFT;
+                        if (snake.getDirection() != RIGHT) {
+                            snake.setDirection(LEFT);
                         }
                     } else if (SDL_GetKeyName(e.key.keysym.sym) == std::string("S")) {
-                        if (direction != UP) {
-                            direction = DOWN;
+                        if (snake.getDirection() != UP) {
+                            snake.setDirection(DOWN);
                         }
                     } else if (SDL_GetKeyName(e.key.keysym.sym) == std::string("D")) {
-                        if (direction != LEFT) {
-                            direction = RIGHT;
+                        if (snake.getDirection() != LEFT) {
+                            snake.setDirection(RIGHT);
                         }
                     }
                 } 
@@ -270,12 +254,12 @@ int main(int argc, char* argv[]) {
             } else {
                 drawSnake(snake, renderer, WHITE);
                 playing = false;
-                eaten = 0;
-                direction = LEFT;
+                snake.resetEaten();
+                snake.setDirection(LEFT);
                 snake.clear();
-                snake.push_front(std::array<int, 2>{15, 7});
-                snake.push_front(std::array<int, 2>{14, 7});
-                snake.push_front(std::array<int, 2>{13, 7});
+                snake.addSegment(std::array<int, 2>{15, 7});
+                snake.addSegment(std::array<int, 2>{14, 7});
+                snake.addSegment(std::array<int, 2>{13, 7});
                 drawGameOver(renderer, snake);
             }
             drawFood(food, renderer, snake, board);

@@ -455,6 +455,7 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
   <ItemGroup>
     <ClCompile Include="C:\Users\14357\GitHub\Work USU\Ambassadors\snake\main.cpp" />
     <ClCompile Include="C:\Users\14357\GitHub\Work USU\Ambassadors\snake\print.cpp" />
+    <ClCompile Include="C:\Users\14357\GitHub\Work USU\Ambassadors\snake\snake.cpp" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

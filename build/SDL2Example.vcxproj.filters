@@ -7,6 +7,9 @@
     <ClCompile Include="C:\Users\14357\GitHub\Work USU\Ambassadors\snake\print.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="C:\Users\14357\GitHub\Work USU\Ambassadors\snake\snake.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="C:\Users\14357\GitHub\Work USU\Ambassadors\snake\CMakeLists.txt" />
