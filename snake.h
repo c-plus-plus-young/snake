@@ -29,4 +29,8 @@ class Snake {
         int addSegment();
 
         int getSize();
+
+        bool move();
+
+        void incrementEaten();
 };
