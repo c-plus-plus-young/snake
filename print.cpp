@@ -1,4 +1,5 @@
 #include <SDL2/SDL.h>
+#include <string>
 
 // File for functions to handle printing text to the screen
 // Each letter is 3x5 pixels, with the top left pixel being

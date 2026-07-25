@@ -39,13 +39,13 @@ bool playing = false; // Forces title screen to show
 bool foodPlaced = false; // Whether food has been placed on the board 
 std::array<int, 2> food{-1, -1}; // Food position
 std::array<std::array<int, 2>, W * H> board; // 2D array to represent the game board
-waitCount = 0; // Counter for waiting on various screens
+int waitCount = 0; // Counter for waiting on various screens
 
 void drawTitle(SDL_Renderer* renderer) {
     printString("Snake", WHITE, 6, 4, renderer);
 }
 
-void drawSnake(Snake snake, SDL_Renderer* renderer, int color) {
+void drawSnake(const Snake& snake, SDL_Renderer* renderer, int color) {
     if (color == GREEN) {
         SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
     } else {
@@ -65,7 +65,7 @@ void drawSnake(Snake snake, SDL_Renderer* renderer, int color) {
 
 // Update snake position based on direction
 // returns false if snake has died
-bool updateSnake(Snake snake, int direction) {
+bool updateSnake(Snake& snake) {
     bool returnVal = snake.move();
      
     // If head is on food, increment eaten
@@ -77,7 +77,7 @@ bool updateSnake(Snake snake, int direction) {
     return returnVal;
 }
 
-void drawGameOver(SDL_Renderer* renderer, Snake snake) {
+void drawGameOver(SDL_Renderer* renderer, const Snake& snake) {
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
 
     // Check length. If snake is maximum length, the game has been won
@@ -104,11 +104,11 @@ void drawGameOver(SDL_Renderer* renderer, Snake snake) {
 }
 
 // Randomly places food in segments not occupied by the snake.
-void drawFood(std::array<int, 2>& food, SDL_Renderer* renderer, Snake snake, const std::array<std::array<int, 2>, W * H>& board) {
+void drawFood(std::array<int, 2>& food, SDL_Renderer* renderer, const Snake& snake, const std::array<std::array<int, 2>, W * H>& board) {
     if (!foodPlaced) {
         std::vector<std::array<int, 2>> availableSpaces;
         for (int i = 0; i < board.size(); i++) {
-            if (std::find(snake.begin(), snake.end(), board[i]) == snake.end()) {
+            if (snake.findSegment(board[i][0], board[i][1]) == false) {
                 availableSpaces.push_back(board[i]);
             }
         }
@@ -129,7 +129,9 @@ void drawFood(std::array<int, 2>& food, SDL_Renderer* renderer, Snake snake, con
 
 // int main(int argc, char* argv[]) {
 int main(int argc, char* argv[]) {
-    Snake snake(15, 7, 13, 7); // Initialize snake with starting segments
+    Snake snake(13, 7, 15, 7, W, H); // Initialize snake with starting segments
+    
+    std::cout << "Initial size = " << snake.getSize() << '\n';
 
     // Initialize Board
     for (int i = 0; i < W * H; i++) {
@@ -162,12 +164,13 @@ int main(int argc, char* argv[]) {
         std::cout << "Failed to load icon: " << SDL_GetError() << "\n";
     }
 
+    waitCount = 0;
+
     while (running) {
         frameStart = SDL_GetTicks();
 
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderClear(renderer);
-        waitCount = 0;
 
         if (!playing) {
             if (waitCount <= 0) {
@@ -190,10 +193,9 @@ int main(int argc, char* argv[]) {
                     } 
                 }
             } else {
-                waitCount -= 1 * FRAME_DELAY;
+                waitCount -= 1;
                 if (waitCount <= 0) {
                     waitCount = 0;
-                    waiting = false;
                 }
             }
         } else {
@@ -224,7 +226,7 @@ int main(int argc, char* argv[]) {
                 } 
             }
 
-            if (updateSnake(snake, direction)) {
+            if (updateSnake(snake)) {
                 drawSnake(snake, renderer, GREEN);
             } else {
                 drawSnake(snake, renderer, WHITE);
@@ -232,9 +234,9 @@ int main(int argc, char* argv[]) {
                 snake.resetEaten();
                 snake.setDirection(LEFT);
                 snake.clear();
-                snake.addSegment(std::array<int, 2>{15, 7});
-                snake.addSegment(std::array<int, 2>{14, 7});
-                snake.addSegment(std::array<int, 2>{13, 7});
+                snake.addSegment(15, 7);
+                snake.addSegment(14, 7);
+                snake.addSegment(13, 7);
                 drawGameOver(renderer, snake);
             }
             drawFood(food, renderer, snake, board);
