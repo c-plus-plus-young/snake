@@ -89,7 +89,7 @@ void drawGameOver(SDL_Renderer* renderer, const Snake& snake) {
         printString("OVER", WHITE, 7, 7, renderer);
     }
     SDL_RenderPresent(renderer);
-    waitCount = 3 * FRAME_DELAY; // Wait for 3 seconds before returning to title screen
+    waitCount = 3000; // Wait for 3 seconds before returning to title screen
 
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
@@ -100,7 +100,7 @@ void drawGameOver(SDL_Renderer* renderer, const Snake& snake) {
         // printChar(std::to_string(snake.getSize()), WHITE, 7 + i * 4, 10, renderer);
     }
     SDL_RenderPresent(renderer);
-    waitCount = 3 * FRAME_DELAY; // Wait for 3 seconds before returning to title screen
+    waitCount = 3000; // Wait for 3 seconds before returning to title screen
 }
 
 // Randomly places food in segments not occupied by the snake.
@@ -120,6 +120,7 @@ void drawFood(std::array<int, 2>& food, SDL_Renderer* renderer, const Snake& sna
         } else {
             // No available spaces left, game over
             playing = false;
+            Uint32 gameOverTime = SDL_GetTicks();
             drawGameOver(renderer, snake);
         }
     }
@@ -231,6 +232,7 @@ int main(int argc, char* argv[]) {
             } else {
                 drawSnake(snake, renderer, WHITE);
                 playing = false;
+                Uint32 gameOverTime = SDL_GetTicks();
                 snake.resetEaten();
                 snake.setDirection(LEFT);
                 snake.clear();
