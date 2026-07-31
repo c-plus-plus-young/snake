@@ -40,6 +40,7 @@ bool foodPlaced = false; // Whether food has been placed on the board
 std::array<int, 2> food{-1, -1}; // Food position
 std::array<std::array<int, 2>, W * H> board; // 2D array to represent the game board
 int waitCount = 0; // Counter for waiting on various screens
+int lastScore = 0; // Last score to display on game over screen
 
 void drawTitle(SDL_Renderer* renderer) {
     printString("Snake", WHITE, 6, 4, renderer);
@@ -88,19 +89,26 @@ void drawGameOver(SDL_Renderer* renderer, const Snake& snake) {
         printString("GAME", WHITE, 7, 1, renderer);
         printString("OVER", WHITE, 7, 7, renderer);
     }
-    SDL_RenderPresent(renderer);
-    waitCount = 3000; // Wait for 3 seconds before returning to title screen
-
+}
+    
+void drawGameScore(SDL_Renderer* renderer, const Snake& snake) {
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
     printString("SCORE:", WHITE, 3, 4, renderer);
-
+    std::cout << "Snake size: " << snake.getSize() << "\n";
     for (int i = 0; i < std::to_string(snake.getSize()).length(); i++) {
-        std::cout << snake.getSize() << "\n";
-        // printChar(std::to_string(snake.getSize()), WHITE, 7 + i * 4, 10, renderer);
+        printChar(std::to_string(snake.getSize())[i], WHITE, 7 + i * 4, 10, renderer);
+        std::cout << "  " << std::to_string(snake.getSize())[i] << "\n";
     }
-    SDL_RenderPresent(renderer);
-    waitCount = 3000; // Wait for 3 seconds before returning to title screen
+}
+
+void resetGame(Snake& snake) {
+    snake.resetEaten();
+    snake.setDirection(LEFT);
+    snake.clear();
+    snake.addSegment(15, 7);
+    snake.addSegment(14, 7);
+    snake.addSegment(13, 7);
 }
 
 // Randomly places food in segments not occupied by the snake.
@@ -118,10 +126,8 @@ void drawFood(std::array<int, 2>& food, SDL_Renderer* renderer, const Snake& sna
             food = availableSpaces[randomIndex];
             foodPlaced = true;
         } else {
-            // No available spaces left, game over
-            playing = false;
-            Uint32 gameOverTime = SDL_GetTicks();
-            drawGameOver(renderer, snake);
+            playing = false; // No available spaces, game is won
+            waitCount = 6 * TARGET_FPS; // Wait for 6 seconds before returning to title screen
         }
     }
     SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
@@ -194,9 +200,20 @@ int main(int argc, char* argv[]) {
                     } 
                 }
             } else {
+                if (waitCount <= 3 * TARGET_FPS) {
+                    drawGameScore(renderer, snake);
+                    if (waitCount == 1) {
+                        resetGame(snake);
+                    }
+                } else if (waitCount <= 6 * TARGET_FPS) {
+                    drawGameOver(renderer, snake);
+                }
+                std::cout << "Waitcount: " << waitCount << "\n";
                 waitCount -= 1;
-                if (waitCount <= 0) {
-                    waitCount = 0;
+                while (SDL_PollEvent(&e)) {
+                    if (e.type == SDL_QUIT) {
+                        running = false;
+                    }
                 }
             }
         } else {
@@ -232,14 +249,7 @@ int main(int argc, char* argv[]) {
             } else {
                 drawSnake(snake, renderer, WHITE);
                 playing = false;
-                Uint32 gameOverTime = SDL_GetTicks();
-                snake.resetEaten();
-                snake.setDirection(LEFT);
-                snake.clear();
-                snake.addSegment(15, 7);
-                snake.addSegment(14, 7);
-                snake.addSegment(13, 7);
-                drawGameOver(renderer, snake);
+                waitCount = 6 * TARGET_FPS; // Wait for 6 seconds before returning
             }
             drawFood(food, renderer, snake, board);
         }
