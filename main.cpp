@@ -191,6 +191,7 @@ int main(int argc, char* argv[]) {
                         if (SDL_GetKeyName(e.key.keysym.sym) == std::string("W") || SDL_GetKeyName(e.key.keysym.sym) == std::string("A") || SDL_GetKeyName(e.key.keysym.sym) == std::string("S") || SDL_GetKeyName(e.key.keysym.sym) == std::string("D")) {
                             playing = true;
                             std::cout << "Starting game...\n";
+                            resetGame(snake);
                         } else {
                             drawTitle(renderer);
 
@@ -202,9 +203,6 @@ int main(int argc, char* argv[]) {
             } else {
                 if (waitCount <= 3 * TARGET_FPS) {
                     drawGameScore(renderer, snake);
-                    if (waitCount == 1) {
-                        resetGame(snake);
-                    }
                 } else if (waitCount <= 6 * TARGET_FPS) {
                     drawGameOver(renderer, snake);
                 }
